@@ -1,0 +1,13 @@
+# Folders starting with a dot (.private, .delete, .vscode, ...) are never published.
+.*/
+FLAT.code-workspace
+
+# Downloaded example data
+examples/data/
+
+# Generated files
+__pycache__/
+*.egg-info/
+build/
+dist/
+*.asv

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flatten-spectrum"
+version = "0.1.0"
+description = "FLAT: separate the aperiodic background from periodic peaks in EEG/MEG power spectra"
+readme = "README_python.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Tobias C. Haase"}, {name = "Steffen Gais"}]
+keywords = ["EEG", "MEG", "power spectrum", "aperiodic", "1/f", "oscillations"]
+dependencies = ["numpy>=1.23"]
+
+[project.urls]
+Homepage = "https://github.com/SteffenGais/FLAT"
+Documentation = "https://github.com/SteffenGais/FLAT/blob/main/docs/method.md"
+Issues = "https://github.com/SteffenGais/FLAT/issues"
+
+[project.optional-dependencies]
+examples = ["scipy>=1.10", "matplotlib>=3.7", "mne>=1.6"]
+
+[tool.setuptools]
+py-modules = ["flatten_spectrum"]

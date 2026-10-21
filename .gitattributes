@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.mat binary
+*.png binary
+*.fig binary
