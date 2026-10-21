@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use FLAT, please cite it using these metadata."
+title: "FLAT: Flattening spectra using the Local Aperiodic Trend"
+type: software
+authors:
+  - family-names: Haase
+    given-names: Tobias C.
+    affiliation: University of Tübingen
+  - family-names: Gais
+    given-names: Steffen
+    affiliation: University of Tübingen
+abstract: >-
+  FLAT separates an EEG or MEG power spectrum into its smooth aperiodic
+  background, the baseline, and the periodic activity on top of it. Dividing
+  power by the baseline gives a flattened spectrum in which oscillations stand
+  out as peaks above 1. Implementations in MATLAB and Python, with examples.
+doi: 10.5281/zenodo.23548995
+repository-code: "https://github.com/SteffenGais/FLAT"
+license: MIT
+keywords:
+  - EEG
+  - MEG
+  - sleep
+  - power spectrum
+  - aperiodic
+  - oscillations
+version: "0.1.0"
+date-released: "2026-10-21"

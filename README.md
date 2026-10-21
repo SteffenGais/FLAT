@@ -1,5 +1,7 @@
 # FLAT
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23548995.svg)](https://doi.org/10.5281/zenodo.23548995)
+
 **Flattening spectra using the Local Aperiodic Trend** separates an EEG or MEG
 power spectrum into its smooth aperiodic background, the *baseline*, and the
 periodic activity on top of it. Dividing power by the baseline gives a
