@@ -1,4 +1,5 @@
 # FLAT for MATLAB
+[Overview](README.md) · [Python](README_python.md) · [Method](docs/method.md)
 
 `flatten_spectrum.m` needs MATLAB R2018b or newer, the examples R2020b or
 newer. No toolboxes are required.
