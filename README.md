@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23548995.svg)](https://doi.org/10.5281/zenodo.23548995)
 
+[MATLAB](README_matlab.md) · [Python](README_python.md) · [Method](docs/method.md)
+
 **FLAT** separates an EEG or MEG power spectrum into its smooth aperiodic
 background, the *baseline*, and the periodic activity on top of it. Dividing
 power by the baseline gives a flattened spectrum in which oscillations stand
