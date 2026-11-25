@@ -1,5 +1,5 @@
 # FLAT for Python
-[Overview](README.md) · [MATLAB](README_matlab.md) · [Method](docs/method.md)
+[Overview](https://github.com/SteffenGais/FLAT#readme) · [MATLAB](https://github.com/SteffenGais/FLAT/blob/main/README_matlab.md) · [Method](https://github.com/SteffenGais/FLAT/blob/main/docs/method.md)
 
 ## Installation
 
