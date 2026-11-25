@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flatten-spectrum"
-version = "0.1.0"
+version = "0.2.0"
 description = "FLAT: separate the aperiodic background from periodic peaks in EEG/MEG power spectra"
 readme = "README_python.md"
 requires-python = ">=3.10"

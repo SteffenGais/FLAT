@@ -17,6 +17,7 @@ addpath('C:\path\to\FLAT')
 ```matlab
 [flattened, baseline, slope] = flatten_spectrum(power, freqs);
 [flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz);
+[flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz, freq_range);
 ```
 
 Inputs:
@@ -27,6 +28,9 @@ Inputs:
 - `freqs`: frequencies in Hz, increasing.
 - `notch_hz` (optional): frequency bands to exclude, one `[low high]` row per
   band. Default: none.
+- `freq_range` (optional): `[low high]` analysis range in Hz. Default:
+  `[0.3 45]`. Keep the frequencies of interest about one octave inside it
+  (see [method](docs/method.md#reliable-frequency-range)).
 
 Outputs:
 
@@ -38,7 +42,7 @@ Outputs:
   one per row (−2 for a 1/f² background). The aperiodic exponent of
   specparam (FOOOF, fixed mode) corresponds to −slope.
 
-Frequencies outside 0.3–45 Hz and inside notch bands are NaN in `flattened`
+Frequencies outside `freq_range` and inside notch bands are NaN in `flattened`
 and `baseline`. Pass only the frequencies your recording measures reliably,
 away from filter edges (see [method](docs/method.md#reliable-frequency-range)):
 

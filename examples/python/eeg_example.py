@@ -42,7 +42,8 @@ def eeg_example(eeg_file=None, channels=None, frequency_range=(0.3, 45), notch_h
     channels: channel names (default: all). One or two channels are shown as
         line plots with their aperiodic baseline, more channels as waterfalls.
     frequency_range: (low, high) in Hz that the recording measures reliably,
-        i.e. away from filter edges (default: the full FLAT range).
+        i.e. away from filter edges; also the FLAT analysis range
+        (default: (0.3, 45)).
     notch_hz: (low, high) bands to exclude, one row per band (default: none).
 
     Returns a dict with freqs, power, baseline, flattened (power / baseline),
@@ -77,7 +78,7 @@ def eeg_example(eeg_file=None, channels=None, frequency_range=(0.3, 45), notch_h
     keep = (freqs >= frequency_range[0]) & (freqs <= frequency_range[1])
     freqs, power = log_cells(freqs[keep], power[:, keep])
     power[np.any(power <= 0, axis=-1)] = np.nan     # flat channels have no spectrum
-    flattened, baseline, slope = flatten_spectrum(power, freqs, notch_hz)
+    flattened, baseline, slope = flatten_spectrum(power, freqs, notch_hz, frequency_range)
 
     name = Path(eeg_file).stem
     if len(raw.ch_names) <= 2:

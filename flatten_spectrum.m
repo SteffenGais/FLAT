@@ -1,14 +1,17 @@
-function [flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz)
+function [flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz, freq_range)
 %FLATTEN_SPECTRUM Flattening spectra using the Local Aperiodic Trend (FLAT).
 % [flattened, baseline, slope] = flatten_spectrum(power, freqs)
 % [flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz)
+% [flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz, freq_range)
 % power: linear power/PSD, one row per spectrum and one column per frequency.
 %        A row or column vector is accepted; its orientation is preserved.
 % freqs: finite, nonnegative, strictly increasing frequencies in Hz.
 % notch_hz: optional [low high] interval(s) to exclude, one per row.
 %           Omitted or [] means no notch.
+% freq_range: optional [low high] analysis range in Hz, 0 < low < high.
+%             Omitted or [] means [0.3 45].
 % flattened: power ./ baseline (dimensionless); baseline: input power units.
-% Both are NaN outside 0.3–45 Hz and inside notch intervals. All-NaN rows
+% Both are NaN outside freq_range and inside notch intervals. All-NaN rows
 % remain NaN. Other analyzed power outside notches must be finite and positive.
 % slope: one signed log-log baseline slope per spectrum over the full 2–24 Hz
 % range, with equal log-frequency weighting. A 1/f^2 baseline gives -2.
@@ -18,6 +21,9 @@ function [flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz)
 
 if nargin < 3
     notch_hz = [];
+end
+if nargin < 4 || isempty(freq_range)
+    freq_range = [0.3 45];
 end
 original_size = size(power);
 power = double(power);
@@ -39,12 +45,18 @@ if ~isempty(notch_hz) && (size(notch_hz, 2) ~= 2 || any(~isfinite(notch_hz), 'al
         || any(notch_hz(2:end, 1) <= notch_hz(1:end-1, 2)))
     error('FLAT:Notch', 'Notch bands must be positive, ordered, disjoint [low high] pairs.');
 end
+if ~isnumeric(freq_range) || ~isreal(freq_range) || numel(freq_range) ~= 2 ...
+        || any(~isfinite(freq_range)) || freq_range(1) <= 0 || freq_range(2) <= freq_range(1)
+    error('FLAT:Range', 'freq_range must be a finite [low high] pair with 0 < low < high.');
+end
+freq_range = double(freq_range);
 
-% Work only in the fixed EEG/MEG range; never take the logarithm of DC.
-selected = freqs >= 0.3 & freqs <= 45;
+% Work only in the analysis range; never take the logarithm of DC.
+selected = freqs >= freq_range(1) & freqs <= freq_range(2);
 f = freqs(selected);
 if numel(f) < 2
-    error('FLAT:Range', 'At least two frequency bins are required within 0.3–45 Hz.');
+    error('FLAT:Range', 'At least two frequency bins are required within %g–%g Hz.', ...
+        freq_range(1), freq_range(2));
 end
 x = log2(f);
 grid = x(1):1/32:x(end)+1e-9;

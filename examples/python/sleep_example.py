@@ -71,7 +71,7 @@ def sleep_example(eeg_file, scoring_file, channels=None, frequency_range=(0.3, 4
     for s in np.flatnonzero(epochs):
         power[s] = np.mean([spectra[e] for e in np.flatnonzero(stage == s)], axis=0)
     power[np.any(power <= 0, axis=-1)] = np.nan     # flat channels have no spectrum
-    flattened, baseline, slope = flatten_spectrum(power, freqs, notch_hz)
+    flattened, baseline, slope = flatten_spectrum(power, freqs, notch_hz, frequency_range)
 
     name = Path(eeg_file).stem
     titles = [f"{stage_name} ({n} epochs)" for stage_name, n in zip(STAGES, epochs)]

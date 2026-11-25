@@ -16,16 +16,17 @@ activity as peaks, together with the noise of the estimate. No threshold or
 peak detection decides what is shown.
 
 The input must be linear power or power spectral density, not amplitude or
-decibels. FLAT analyzes the supplied frequencies within **0.3–45 Hz**; all
-other frequencies are NaN in the outputs. Multiplying the input by a constant
-(e.g. changing units) scales the baseline and leaves $R$ and the slope unchanged.
+decibels. FLAT analyzes the supplied frequencies within a selected range,
+by default **0.3–45 Hz**; all other frequencies are NaN in the outputs.
+Multiplying the input by a constant (e.g. changing units) scales the
+baseline and leaves $R$ and the slope unchanged.
 
 ## Algorithm
 
-1. Keep the frequencies within 0.3–45 Hz. Bins inside declared notch bands
-   are bridged by linear interpolation of log power over log frequency from
-   their unaffected neighbors. They support the estimate but are NaN in both
-   outputs.
+1. Keep the frequencies within the selected range (default: 0.3–45 Hz). Bins
+   inside declared notch bands are bridged by linear interpolation of log
+   power over log frequency from their unaffected neighbors. They support the
+   estimate but are NaN in both outputs.
 2. With $x = \log_2 f$ and $y = \log_{10} P$, interpolate $y$ onto a grid with
    1/32-octave spacing, starting at the first frequency.
 3. Fit a Theil–Sen line to the outer 32 grid points (one octave) at each end:
@@ -54,7 +55,7 @@ other frequencies are NaN in the outputs. Multiplying the input by a constant
   covers less than half of its window, but a strong peak rises above the
   noise over two to three times its half-maximum width. The two-octave window
   therefore keeps narrow rhythms such as sleep spindles and alpha (about
-  0.2–0.4 octave at half maximum) largely out of the baseline, while wider
+  0.15–0.35 octave at half maximum) largely out of the baseline, while wider
   peaks are partly absorbed (see Limits). A narrower window would follow the
   background more closely but would be lifted by more peaks. Consequently,
   broad activity, such as most delta activity in deep sleep, is part of the
@@ -65,9 +66,10 @@ other frequencies are NaN in the outputs. Multiplying the input by a constant
   them around 10 Hz.
 - **Edge fit over one octave.** Half a window: long enough for a robust line,
   short enough to describe only the edge of the spectrum.
-- **Analysis range 0.3–45 Hz.** The range most EEG and MEG recordings measure
-  reliably: above slow drifts and typical high-pass filters, below line noise
-  at 50 or 60 Hz.
+- **Default analysis range 0.3–45 Hz.** The range most EEG and MEG
+  recordings measure reliably: above slow drifts and typical high-pass
+  filters, below line noise at 50 or 60 Hz. Another range can be selected
+  (see Reliable frequency range).
 - **Slope interval 2–24 Hz.** Above the high-pass and slow-oscillation region
   (the baseline at 2 Hz uses data down to 1 Hz) and below most muscle activity
   and the 35-Hz low-pass filter common in sleep recordings. The two-octave
@@ -130,6 +132,21 @@ keep = (freqs >= 1) & (freqs <= 40)
 flattened, baseline, slope = flatten_spectrum(power[..., keep], freqs[keep])
 ```
 
+The optional range argument sets the widest span that is analyzed, by
+default 0.3–45 Hz. Choose the range about one octave wider than the
+frequencies of interest on each side (see Limits), e.g. 0.3–180 Hz for
+activity up to 90 Hz, and exclude line noise and its harmonics:
+
+```matlab
+notch_hz = [48 52; 98 102; 148 152];
+[flattened, baseline, slope] = flatten_spectrum(power, freqs, notch_hz, [0.3 180]);
+```
+
+```python
+notch_hz = [(48, 52), (98, 102), (148, 152)]
+flattened, baseline, slope = flatten_spectrum(power, freqs, notch_hz, freq_range=(0.3, 180))
+```
+
 The slope needs the whole 2–24 Hz interval. It is NaN if the frequencies
 start above 2 Hz or end below 24 Hz, or if a notch band overlaps this
 interval. The baseline and the flattened spectrum are still estimated.
@@ -153,7 +170,10 @@ interval. The baseline and the flattened spectrum are still estimated.
   analysis started at 0.6 Hz or lower, but came out 30–65% too small when it
   started at 0.7–0.8 Hz. Start the analysis about one octave below the lowest
   peak of interest, e.g. at 0.3–0.5 Hz for slow oscillations near 1 Hz. This
-  needs a correspondingly low high-pass filter and long windows. 
+  needs a correspondingly low high-pass filter and long windows. At the upper
+  end, peaks within about one octave of the limit, i.e. above about 22 Hz for
+  the default 45 Hz, can come out too small or slightly too large unless the
+  range is extended.
 - **Strong curvature.** Curvature within two octaves is approximated by
   local straight lines, and a single slope cannot describe a curved
   background. Plot the baseline when curvature matters.

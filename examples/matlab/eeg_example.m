@@ -11,8 +11,8 @@ function result = eeg_example(eeg_file, options)
 %                       channels are shown as line plots with their
 %                       aperiodic baseline, more channels as waterfalls.
 %     'FrequencyRange'  [low high] in Hz that the recording measures
-%                       reliably, i.e. away from filter edges
-%                       (default [0.3 45], the full FLAT range).
+%                       reliably, i.e. away from filter edges; also the
+%                       FLAT analysis range (default [0.3 45]).
 %     'Notch'           [low high] bands to exclude, one row per band
 %                       (default: none).
 %
@@ -64,7 +64,8 @@ end
 keep = freqs >= options.FrequencyRange(1) & freqs <= options.FrequencyRange(2);
 [freqs, power] = log_cells(freqs(keep), power(:, keep));
 power(any(power <= 0, 2), :) = NaN;          % flat channels have no spectrum
-[flattened, baseline, slope] = flatten_spectrum(power, freqs, options.Notch);
+[flattened, baseline, slope] = flatten_spectrum(power, freqs, options.Notch, ...
+    options.FrequencyRange);
 
 [~, name] = fileparts(eeg_file);
 if numel(rec.labels) <= 2

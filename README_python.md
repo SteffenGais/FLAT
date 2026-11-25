@@ -32,6 +32,7 @@ from flatten_spectrum import flatten_spectrum
 
 flattened, baseline, slope = flatten_spectrum(power, freqs)
 flattened, baseline, slope = flatten_spectrum(power, freqs, notch_hz=[(47.5, 52.5)])
+flattened, baseline, slope = flatten_spectrum(power, freqs, notch_hz, freq_range=(0.3, 90))
 ```
 
 Inputs:
@@ -42,6 +43,9 @@ Inputs:
 - `freqs`: frequencies in Hz, increasing.
 - `notch_hz` (optional): frequency bands to exclude, as `(low, high)` pairs.
   Default: none.
+- `freq_range` (optional): `(low, high)` analysis range in Hz. Default:
+  `(0.3, 45)`. Keep the frequencies of interest about one octave inside it
+  (see [method](https://github.com/SteffenGais/FLAT/blob/main/docs/method.md#reliable-frequency-range)).
 
 Outputs:
 
@@ -53,7 +57,7 @@ Outputs:
   one per spectrum (−2 for a 1/f² background). The aperiodic exponent of
   specparam (FOOOF, fixed mode) corresponds to −slope.
 
-Frequencies outside 0.3–45 Hz and inside notch bands are NaN in `flattened`
+Frequencies outside `freq_range` and inside notch bands are NaN in `flattened`
 and `baseline`. Pass only the frequencies your recording measures reliably,
 away from filter edges (see [method](https://github.com/SteffenGais/FLAT/blob/main/docs/method.md#reliable-frequency-range)):
 

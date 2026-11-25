@@ -4,7 +4,7 @@ import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
 
-def flatten_spectrum(power, freqs, notch_hz=None):
+def flatten_spectrum(power, freqs, notch_hz=None, freq_range=(0.3, 45)):
     """Return flattened power / baseline, aperiodic baseline, and 2–24 Hz slope.
 
     Parameters
@@ -17,12 +17,15 @@ def flatten_spectrum(power, freqs, notch_hz=None):
     notch_hz : None, pair, or array_like of shape (n_bands, 2), optional
         Excluded intervals in Hz, e.g. (32, 33). None (default) or [] means
         no notch. Give the actual affected interval, not just its center.
+    freq_range : pair, optional
+        Analysis range (low, high) in Hz, 0 < low < high. Default (0.3, 45);
+        None means the default.
 
     Returns
     -------
     flattened, baseline : ndarray, same shape as power
         Dimensionless power / baseline and baseline in the input power units.
-        Values outside 0.3–45 Hz and inside notch bands are NaN.
+        Values outside freq_range and inside notch bands are NaN.
     slope : ndarray, shape power.shape[:-1]
         Signed least-squares slope of log10(baseline) versus log10(frequency),
         with equal weight per log-frequency interval over 2–24 Hz. A 1/f**2
@@ -52,12 +55,17 @@ def flatten_spectrum(power, freqs, notch_hz=None):
             raise ValueError("Notch bands must be positive, ordered, disjoint [low, high] pairs.")
     else:
         bands = np.empty((0, 2))
+    limits = np.asarray((0.3, 45) if freq_range is None else freq_range, dtype=float)
+    if (limits.shape != (2,) or not np.isfinite(limits).all()
+            or limits[0] <= 0 or limits[1] <= limits[0]):
+        raise ValueError("freq_range must be a finite (low, high) pair with 0 < low < high.")
 
-    # Work only in the fixed EEG/MEG analysis range. DC is never logarithmed.
-    selected = (freqs >= 0.3) & (freqs <= 45)
+    # Work only in the analysis range. DC is never logarithmed.
+    selected = (freqs >= limits[0]) & (freqs <= limits[1])
     f = freqs[selected]
     if f.size < 2:
-        raise ValueError("At least two frequency bins are required within 0.3–45 Hz.")
+        raise ValueError(f"At least two frequency bins are required within "
+                         f"{limits[0]:g}–{limits[1]:g} Hz.")
     x = np.log2(f)
     grid = np.arange(x[0], x[-1] + 1e-9, 1 / 32)
     if grid.size < 2:

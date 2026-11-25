@@ -71,7 +71,7 @@ for s = 1:n_stages
         p(any(p <= 0, 2), :) = NaN;          % flat channels have no spectrum
         power(:, :, s) = p;
         [flattened(:, :, s), baseline(:, :, s), slope(:, s)] = ...
-            flatten_spectrum(p, freqs, options.Notch);
+            flatten_spectrum(p, freqs, options.Notch, options.FrequencyRange);
     end
 end
 
